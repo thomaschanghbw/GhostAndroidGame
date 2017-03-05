@@ -85,19 +85,7 @@ public class TrieNode {
             }
         }
     }
-
-    private String getAnyWordStartingWithHelper() {
-        Random random = new Random();
-        List<String> keys = new ArrayList<>(children.keySet());
-        String randomKey = keys.get(random.nextInt(keys.size()));
-        TrieNode node = children.get(randomKey);
-
-        if (randomKey.equals("\0")) {
-            return "";
-        }
-
-        return randomKey + node.getAnyWordStartingWithHelper();
-    }
+    
 
     public String getAnyWordStartingWith(String s) {
         TrieNode node_starting_with_s = getNodeStartingWith(s);
