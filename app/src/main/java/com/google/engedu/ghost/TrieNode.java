@@ -16,6 +16,9 @@
 package com.google.engedu.ghost;
 
 import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
 
 
 public class TrieNode {
@@ -28,17 +31,122 @@ public class TrieNode {
     }
 
     public void add(String s) {
+        if (s.equals(""))
+        {
+            children.put("\0", null);
+        }
+        else
+        {
+            String first_letter = Character.toString(s.charAt(0));
+            String remainder_of_string = s.substring(1);
+            if (children.containsKey(first_letter))
+            {
+                children.get(first_letter).add(remainder_of_string);
+            }
+            else
+            {
+                TrieNode node = new TrieNode();
+                children.put(first_letter, node);
+                node.add(remainder_of_string);
+            }
+        }
     }
 
     public boolean isWord(String s) {
-      return false;
+        if (s.isEmpty() && children.containsKey("\0"))
+        {
+            return true;
+        }
+        else if (!s.isEmpty())
+        {
+            String first_letter = Character.toString(s.charAt(0));
+            String remainder_of_string = s.substring(1);
+            return children.containsKey(first_letter) && children.get(first_letter).isWord(remainder_of_string);
+        }
+        return false;
+    }
+
+    private TrieNode getNodeStartingWith(String s) {
+        if (s.isEmpty())
+        {
+            return this;
+        }
+        else
+        {
+            String first_letter = Character.toString(s.charAt(0));
+            String remainder_of_string = s.substring(1);
+            if (children.containsKey(first_letter))
+            {
+                return children.get(first_letter).getNodeStartingWith(remainder_of_string);
+            }
+            else
+            {
+                return null;
+            }
+        }
+    }
+
+    private String getAnyWordStartingWithHelper() {
+        Random random = new Random();
+        List<String> keys = new ArrayList<>(children.keySet());
+        String randomKey = keys.get(random.nextInt(keys.size()));
+        TrieNode node = children.get(randomKey);
+
+        if (randomKey.equals("\0")) {
+            return "";
+        }
+
+        return randomKey + node.getAnyWordStartingWithHelper();
     }
 
     public String getAnyWordStartingWith(String s) {
-        return null;
+        TrieNode node_starting_with_s = getNodeStartingWith(s);
+        if (node_starting_with_s == null) {
+            return null;
+        }
+        String random_word = s;
+        while (true) {
+            Random random = new Random();
+            List<String> keys = new ArrayList<>(node_starting_with_s.children.keySet());
+            String ran_string = keys.get(random.nextInt(keys.size()));
+            if (ran_string.equals("\0")) {
+                return random_word;
+            }
+            node_starting_with_s = node_starting_with_s.children.get(ran_string);
+            random_word += ran_string;
+        }
+    }
+
+
+    private String getGoodWordStartingWithHelper() {
+        List<String> keys = new ArrayList<>(children.keySet());
+        if (keys.size() > 0) {
+            Random random = new Random();
+            String randomKey = keys.get(random.nextInt(keys.size()));
+            TrieNode node = children.get(randomKey);
+            while (true) {
+                Random random1 = new Random();
+                List<String> keys1 = new ArrayList<>(node.children.keySet());
+                String randomKey1 = keys1.get(random.nextInt(keys1.size()));
+                node = node.children.get(randomKey1);
+
+                if (randomKey1.equals("\0")) {
+                    return randomKey;
+                }
+                randomKey += randomKey1;
+            }
+        }
+
+        return "";
     }
 
     public String getGoodWordStartingWith(String s) {
-        return null;
+        TrieNode nodeWithS = getNodeStartingWith(s);
+        if (nodeWithS == null) {
+            return null;
+        }
+
+        return s + nodeWithS.getGoodWordStartingWithHelper();
     }
 }
+

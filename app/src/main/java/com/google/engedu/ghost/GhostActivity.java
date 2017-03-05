@@ -83,7 +83,7 @@ public class GhostActivity extends AppCompatActivity {
         setContentView(R.layout.activity_ghost);
         AssetManager assetManager = getAssets();
         try {
-            dictionary = new SimpleDictionary(assetManager.open("words.txt"));
+            dictionary = new FastDictionary(assetManager.open("words.txt"));
         }
         catch (IOException e)
         {
